@@ -37,7 +37,7 @@ jobs:
       - name: Aprovando Pull Request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: $PR_NUMBER
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           gh pr review $PR_NUMBER --comment -b "Todos os testes passaram"
           gh pr review $PR_NUMBER --approve
@@ -45,7 +45,7 @@ jobs:
       # - name: Bloqueando o pull request
       #   env:
       #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     PR_NUMBER: $PR_NUMBER
+      #     PR_NUMBER: ${{ github.event.pull_request.number }}
       #   run: |
       #     echo "Blocking merge PR..."
       #     gh pr lock $PR_NUMBER
@@ -55,7 +55,7 @@ jobs:
       - name: Verificar status dos testes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: $PR_NUMBER
+          PR_NUMBER: ${{ github.event.pull_request.number }}
           JOB_STATUS: "${{ job.status }}"
         run: |
           if [ '$JOB_STATUS' == 'failure' ]; then
