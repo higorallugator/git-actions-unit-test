@@ -15,16 +15,6 @@ on:
   #   - cron: '0 7 * * *'
 
 jobs:
-  default-config:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Desbloqueando o pull request
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Unlocking PR..."
-          gh pr unlock ${{ github.event.pull_request.number }}
 
   tests:
     runs-on: ubuntu-latest
