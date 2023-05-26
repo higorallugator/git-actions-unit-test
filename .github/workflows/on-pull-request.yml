@@ -37,31 +37,34 @@ jobs:
       - name: Aprovando Pull Request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: $PR_NUMBER
         run: |
-          gh pr review ${{ github.event.pull_request.number }} --comment -b "Todos os testes passaram"
-          gh pr review ${{ github.event.pull_request.number }} --approve
+          gh pr review $PR_NUMBER --comment -b "Todos os testes passaram"
+          gh pr review $PR_NUMBER --approve
 
       # - name: Bloqueando o pull request
       #   env:
       #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     PR_NUMBER: $PR_NUMBER
       #   run: |
       #     echo "Blocking merge PR..."
-      #     gh pr lock ${{ github.event.pull_request.number }}
-      #     # gh pr lock ${{ github.event.pull_request.number }}
-      #     # gh pr label ${{ github.event.pull_request.number }} --add block-merge
+      #     gh pr lock $PR_NUMBER
+      #     # gh pr lock $PR_NUMBER
+      #     # gh pr label $PR_NUMBER --add block-merge
 
       - name: Verificar status dos testes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: $PR_NUMBER
+          JOB_STATUS: "${{ job.status }}"
         run: |
-          echo ${{ job.status }}
-          # if [ ${{ job.status }} == 'failure' ]; then
-          #   echo "Os testes falharam. O pull request será bloqueado."
-          #   gh pr lock ${{ github.event.pull_request.number }}
-          #   exit 1
-          # fi
-          # if [ ${{ job.status }} == 'success' ]; then
-          #   echo "Os testes passaram. O pull request será liberado."
-          #   gh pr unlock ${{ github.event.pull_request.number }}
-          #   exit 1
-          # fi
+          if [ '$JOB_STATUS' == 'failure' ]; then
+            echo 'Os testes falharam. O pull request será bloqueado.'
+            gh pr lock $PR_NUMBER
+            exit 1
+          fi
+          if [ '$JOB_STATUS' == 'success' ]; then
+            echo "Os testes passaram. O pull request será liberado."
+            gh pr unlock $PR_NUMBER
+            exit 1
+          fi
