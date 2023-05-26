@@ -37,7 +37,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr review --approve --comment -b "Todos os testes passaram"
+          gh pr review --approve --comment "Todos os testes passaram"
 
       - name: Bloqueando o pull request
         env:
