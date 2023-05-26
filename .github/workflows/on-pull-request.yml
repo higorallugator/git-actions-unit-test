@@ -35,7 +35,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr lock ${{ github.event.pull_request.number }} --reason 'Necessário testes serem aprovados'
+          echo "Blocking merge PR..."
+          gh pr lock ${{ github.event.pull_request.number }}
 
       # - name: Verificar status dos testes
       #   run: |
