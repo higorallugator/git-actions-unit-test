@@ -1,4 +1,4 @@
-name: Executando testes unitários
+name: Validação - Testes Unitários
 
 on:
   push:
@@ -31,11 +31,8 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
-      - name: Set up status check
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Bloquear Merge se os testes falharem
+        if: ${{ steps.test_status.outcome != 'success' }}
         run: |
-          if [ ${{ job.status }} == 'success' ]; then
-            gh pr check "${GITHUB_SHA}" --status "completed" --conclusion "success" --name "Tests" --title "Tests Passed" --message "All tests passed successfully."
-          else
-            gh pr check "${GITHUB_SHA}" --status "completed" --conclusion "failure" --name "Tests" --title "Tests Failed" --message "Some tests failed. Please check the test results."
-          fi
+          echo "Os testes falharam. O merge não pode ser realizado."
+          exit 1
