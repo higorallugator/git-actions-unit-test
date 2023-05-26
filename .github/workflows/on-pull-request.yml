@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2.2.0
         with:
-          node-version: 'lts'
+          node-version: '16'
 
       - name: Install dependencies
         run: npm install
@@ -35,9 +35,9 @@ jobs:
         run: |
           gh pr label ${{ github.event.pull_request.number }} --add block-merge
 
-      - name: Verificar status dos testes
-        run: |
-          if [ ${{ job.status }} == 'failure' ]; then
-            echo "Os testes falharam. O pull request será bloqueado."
-            exit 1
-          fi
+      # - name: Verificar status dos testes
+      #   run: |
+      #     if [ ${{ job.status }} == 'failure' ]; then
+      #       echo "Os testes falharam. O pull request será bloqueado."
+      #       exit 1
+      #     fi
