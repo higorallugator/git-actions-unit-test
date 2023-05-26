@@ -34,5 +34,5 @@ jobs:
       - name: Bloquear Merge se os testes falharem
         if: ${{ steps.test_status.outcome != 'success' }}
         run: |
-          echo "Os testes falharam. O merge não pode ser realizado."
+          echo "${{ steps.test_status.outcome }} Os testes falharam. O merge não pode ser realizado."
           exit 1
