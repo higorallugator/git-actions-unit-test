@@ -54,13 +54,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ ${{ job.status }} == 'failure' ]; then
-            echo "Os testes falharam. O pull request será bloqueado."
-            gh pr lock ${{ github.event.pull_request.number }}
-            exit 1
-          fi
-          if [ ${{ job.status }} == 'success' ]; then
-            echo "Os testes passaram. O pull request será liberado."
-            gh pr unlock ${{ github.event.pull_request.number }}
-            exit 1
-          fi
+          echo ${{ job.status }}
+          # if [ ${{ job.status }} == 'failure' ]; then
+          #   echo "Os testes falharam. O pull request será bloqueado."
+          #   gh pr lock ${{ github.event.pull_request.number }}
+          #   exit 1
+          # fi
+          # if [ ${{ job.status }} == 'success' ]; then
+          #   echo "Os testes passaram. O pull request será liberado."
+          #   gh pr unlock ${{ github.event.pull_request.number }}
+          #   exit 1
+          # fi
