@@ -13,7 +13,7 @@ on:
   #   - cron: '0 7 * * *'
 
 jobs:
-  testes:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2.2.0
         with:
-          node-version: '16'
+          node-version: 'lts'
 
       - name: Install dependencies
         run: npm install
@@ -31,30 +31,13 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
-      # - name: Bloquear Merge se os testes falharem
-      #   if: ${{ steps.test_status.outcome != 'success' }}
-      #   run: |
-      #     echo "${{ steps.test_status.outcome }} Os testes falharam. O merge não pode ser realizado."
-      #     exit 1
-  verificar_testes:
-    name: Verificar Status dos Testes
-    needs: testes
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout do repositório
-        uses: actions/checkout@v2
-
-      - name: Verificar Status dos Testes
-        id: test_status
-        uses: actions/github/check-suite
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          check_suite_id: ${{ github.event.check_suite.id }}
-
-      - name: Bloquear Merge se os testes falharem
+      - name: Bloqueando o pull request
         run: |
-          if [ "${{ steps.test_status.outputs.conclusion }}" != "success" ]; then
-            echo "Os testes falharam. O merge não pode ser realizado."
+          gh pr label ${{ github.event.pull_request.number }} --add block-merge
+
+      - name: Verificar status dos testes
+        run: |
+          if [ ${{ job.status }} == 'failure' ]; then
+            echo "Os testes falharam. O pull request será bloqueado."
             exit 1
           fi
