@@ -15,6 +15,17 @@ on:
   #   - cron: '0 7 * * *'
 
 jobs:
+  default-config:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Desbloqueando o pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Unlocking PR..."
+          gh pr unlock ${{ github.event.pull_request.number }}
+
   tests:
     runs-on: ubuntu-latest
 
@@ -40,18 +51,26 @@ jobs:
           gh pr review ${{ github.event.pull_request.number }} --comment -b "Todos os testes passaram"
           gh pr review ${{ github.event.pull_request.number }} --approve
 
-      - name: Bloqueando o pull request
+      # - name: Bloqueando o pull request
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     echo "Blocking merge PR..."
+      #     gh pr lock ${{ github.event.pull_request.number }}
+      #     # gh pr lock ${{ github.event.pull_request.number }}
+      #     # gh pr label ${{ github.event.pull_request.number }} --add block-merge
+
+      - name: Verificar status dos testes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Blocking merge PR..."
-          gh pr lock ${{ github.event.pull_request.number }}
-          # gh pr lock ${{ github.event.pull_request.number }}
-          # gh pr label ${{ github.event.pull_request.number }} --add block-merge
-
-      # - name: Verificar status dos testes
-      #   run: |
-      #     if [ ${{ job.status }} == 'failure' ]; then
-      #       echo "Os testes falharam. O pull request será bloqueado."
-      #       exit 1
-      #     fi
+          if [ ${{ job.status }} == 'failure' ]; then
+            echo "Os testes falharam. O pull request será bloqueado."
+            gh pr lock ${{ github.event.pull_request.number }}
+            exit 1
+          fi
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "Os testes passaram. O pull request será liberado."
+            gh pr unlock ${{ github.event.pull_request.number }}
+            exit 1
+          fi
