@@ -32,6 +32,8 @@ jobs:
         run: npm run test:unit
 
       - name: Bloqueando o pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr lock ${{ github.event.pull_request.number }} --reason 'Necessário testes serem aprovados'
 
