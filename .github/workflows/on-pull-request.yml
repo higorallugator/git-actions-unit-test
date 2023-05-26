@@ -31,11 +31,11 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
-      - name: Bloquear Merge se os testes falharem
-        if: ${{ steps.test_status.outcome != 'success' }}
-        run: |
-          echo "${{ steps.test_status.outcome }} Os testes falharam. O merge não pode ser realizado."
-          exit 1
+      # - name: Bloquear Merge se os testes falharem
+      #   if: ${{ steps.test_status.outcome != 'success' }}
+      #   run: |
+      #     echo "${{ steps.test_status.outcome }} Os testes falharam. O merge não pode ser realizado."
+      #     exit 1
   verificar_testes:
     name: Verificar Status dos Testes
     needs: testes
