@@ -26,11 +26,11 @@ jobs:
       - name: Run unit tests
         run: npm test:unit
 
-      # - name: Set up status check
-      #   if: ${{ github.event_name == 'pull_request' }}
-      #   run: |
-      #     if [ ${{ job.status }} == 'success' ]; then
-      #       gh pr check "${GITHUB_SHA}" --status "completed" --conclusion "success" --name "Tests" --title "Tests Passed" --message "All tests passed successfully."
-      #     else
-      #       gh pr check "${GITHUB_SHA}" --status "completed" --conclusion "failure" --name "Tests" --title "Tests Failed" --message "Some tests failed. Please check the test results."
-      #     fi
+      - name: Set up status check
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            gh pr check "${GITHUB_SHA}" --status "completed" --conclusion "success" --name "Tests" --title "Tests Passed" --message "All tests passed successfully."
+          else
+            gh pr check "${GITHUB_SHA}" --status "completed" --conclusion "failure" --name "Tests" --title "Tests Failed" --message "Some tests failed. Please check the test results."
+          fi
