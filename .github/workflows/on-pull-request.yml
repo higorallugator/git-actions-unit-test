@@ -9,8 +9,8 @@ on:
     branches:
       - main
       - development
-    types:
-        - opened
+    # types:
+    #     - opened
   # schedule:
   #   - cron: '0 7 * * *'
 
