@@ -37,7 +37,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr review ${{ github.event.pull_request.number }} --comment -b "Todos os testes passaram"
+          gh pr review ${{ github.event.pull_request.number }} --approve --comment -b "Todos os testes passaram"
 
       - name: Bloqueando o pull request
         env:
