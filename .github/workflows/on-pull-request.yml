@@ -47,10 +47,24 @@ jobs:
 
       - name: Verificar Status dos Testes
         id: test_status
-        uses: actions/github/check-suite@v3
+        uses: actions/github-script@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          check_suite_id: ${{ github.event.check_suite.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const checkSuiteResponse = await github.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+            });
+
+            const checkSuites = checkSuiteResponse.data.check_suites;
+            const testSuite = checkSuites.find((suite) =>
+              suite.app.slug.includes('github-actions')
+            );
+
+            return {
+              conclusion: testSuite.conclusion
+            };
 
       - name: Bloquear Merge se os testes falharem
         run: |
