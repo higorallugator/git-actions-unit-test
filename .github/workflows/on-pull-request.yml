@@ -52,23 +52,23 @@ jobs:
       #     # gh pr lock $PR_NUMBER
       #     # gh pr label $PR_NUMBER --add block-merge
 
-      - name: Verificar status dos testes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          JOB_STATUS: "${{ job.status }}"
-        run: |
-          if [ '$JOB_STATUS' == 'failure' ]; then
-            echo 'Os testes falharam. O pull request será bloqueado.'
-            gh pr lock $PR_NUMBER
-            gh pr review $PR_NUMBER --comment -b "Necessário verificar testes"
-            gh pr review $PR_NUMBER --request-changes
-            exit 1
-          fi
-          if [ '$JOB_STATUS' == 'success' ]; then
-            echo "Os testes passaram. O pull request será liberado."
-            gh pr unlock $PR_NUMBER
-            gh pr review $PR_NUMBER --comment -b "Todos os testes passaram"
-            gh pr review $PR_NUMBER --approve
-            exit 1
-          fi
+      # - name: Verificar status dos testes
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     PR_NUMBER: ${{ github.event.pull_request.number }}
+      #     JOB_STATUS: "${{ job.status }}"
+      #   run: |
+      #     if [ '$JOB_STATUS' == 'failure' ]; then
+      #       echo 'Os testes falharam. O pull request será bloqueado.'
+      #       gh pr lock $PR_NUMBER
+      #       gh pr review $PR_NUMBER --comment -b "Necessário verificar testes"
+      #       gh pr review $PR_NUMBER --request-changes
+      #       exit 1
+      #     fi
+      #     if [ '$JOB_STATUS' == 'success' ]; then
+      #       echo "Os testes passaram. O pull request será liberado."
+      #       gh pr unlock $PR_NUMBER
+      #       gh pr review $PR_NUMBER --comment -b "Todos os testes passaram"
+      #       gh pr review $PR_NUMBER --approve
+      #       exit 1
+      #     fi
