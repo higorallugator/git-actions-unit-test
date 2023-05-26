@@ -34,6 +34,8 @@ jobs:
         run: npm run test:unit
 
       - name: Aprovando Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr review --approve --comment -b "Todos os testes passaram"
 
