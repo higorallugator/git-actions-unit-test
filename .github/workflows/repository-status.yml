@@ -1,0 +1,56 @@
+name: Get Pull Requests and Branches
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * *"
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  REPOSITORY: ${{ github.repository }}
+  PR_COUNT: ${{ needs.get_pull_requests.outputs.count }}
+  PR_TITLES: ${{ needs.get_pull_requests.outputs.count }}
+  BRANCH_COUNT: ${{ needs.get_branches.outputs.count }}
+  BRANCH_TITLES: ${{ needs.get_branches.outputs.names }}
+
+jobs:
+  get_pull_requests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get Pull Requests
+        id: pull_requests
+        run: |
+          pull_requests=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+          "https://api.github.com/repos/$REPOSITORY/pulls?state=open")
+          echo "::set-output name=count::$(echo "$pull_requests" | jq length)"
+          echo "::set-output name=titles::$(echo "$pull_requests" | jq -r '.[].title')"
+
+  get_branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get Branches
+        id: branches
+        run: |
+          branches=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+          "https://api.github.com/repos/$REPOSITORY/branches")
+          echo "::set-output name=count::$(echo "$branches" | jq length)"
+          echo "::set-output name=names::$(echo "$branches" | jq -r '.[].name')"
+
+  display_results:
+    needs: [get_pull_requests, get_branches]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display Results
+        run: |
+          echo "Pull Requests:"
+          echo "Count: $PR_COUNT"
+          echo "Titles: $PR_TITLES"
+          echo ""
+          echo "Branches:"
+          echo "Count: $BRANCH_COUNT"
+          echo "Names: $BRANCH_TITLES"

@@ -9,10 +9,8 @@ on:
     branches:
       - main
       - development
-    # types:
-    #     - opened
-  # schedule:
-  #   - cron: '0 7 * * *'
+    types:
+      - opened
 
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,7 +36,7 @@ jobs:
       - name: Run eslint
         run: npm run lint
 
-  tests:
+  unit-test:
     needs: eslint
     runs-on: ubuntu-latest
     steps:
@@ -57,9 +55,9 @@ jobs:
         run: npm run test:unit
 
   approve-pr:
-    needs: tests
+    needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.tests.result == 'success' }}
+    if: ${{ needs.unit-test.result == 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
@@ -70,8 +68,9 @@ jobs:
           gh pr review $PR_NUMBER --approve
 
   request-changes-pr:
-    needs: tests
+    needs: unit-test
     runs-on: ubuntu-latest
+    if: ${{ needs.unit-test.result != 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
