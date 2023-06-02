@@ -78,7 +78,7 @@ jobs:
   request-changes-pr:
     needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.result != 'success' || needs.unit-test.result == 'failure' }}
+    if: ${{ needs.unit-test.result != 'success' || needs.unit-test.result == 'failure' || needs.unit-test.conclusion != 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
