@@ -12,14 +12,6 @@ on:
   schedule:
     - cron: "0 9 * * *"
 
-env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  REPOSITORY: ${{ github.repository }}
-  PR_COUNT: ${{ needs.get_pull_requests.outputs.count }}
-  PR_TITLES: ${{ needs.get_pull_requests.outputs.count }}
-  BRANCH_COUNT: ${{ needs.get_branches.outputs.count }}
-  BRANCH_TITLES: ${{ needs.get_branches.outputs.names }}
-
 jobs:
   get_pull_requests_and_reviewers:
     runs-on: ubuntu-latest
