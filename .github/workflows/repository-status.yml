@@ -1,5 +1,13 @@
 name: Get Pull Requests and Branches
 on:
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+    branches:
+      - main
+      - development
   workflow_dispatch:
   schedule:
     - cron: "0 9 * * *"
@@ -13,7 +21,7 @@ env:
   BRANCH_TITLES: ${{ needs.get_branches.outputs.names }}
 
 jobs:
-  get_pull_requests:
+  get_pull_requests_and_reviewers:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -22,35 +30,33 @@ jobs:
       - name: Get Pull Requests
         id: pull_requests
         run: |
-          pull_requests=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-          "https://api.github.com/repos/$REPOSITORY/pulls?state=open")
+          pull_requests=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/pulls?state=open")
           echo "::set-output name=count::$(echo "$pull_requests" | jq length)"
           echo "::set-output name=titles::$(echo "$pull_requests" | jq -r '.[].title')"
+          echo "::set-output name=urls::$(echo "$pull_requests" | jq -r '.[].url')"
 
-  get_branches:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Get Branches
-        id: branches
+      - name: Get Reviewers
+        id: reviewers
         run: |
-          branches=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-          "https://api.github.com/repos/$REPOSITORY/branches")
-          echo "::set-output name=count::$(echo "$branches" | jq length)"
-          echo "::set-output name=names::$(echo "$branches" | jq -r '.[].name')"
+          pull_request_urls=(${{ needs.get_pull_requests.outputs.urls }})
+          reviewer_info=""
+          for url in "${pull_request_urls[@]}"; do
+            reviewers=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$url/requested_reviewers")
+            reviewer_names=$(echo "$reviewers" | jq -r '.[].login')
+            reviewer_info+="Pull Request: $url | Reviewers: $reviewer_names"$'\n'
+          done
+          echo "::set-output name=reviewers::$(echo "$reviewer_info")"
 
   display_results:
-    needs: [get_pull_requests, get_branches]
+    needs: get_pull_requests_and_reviewers
     runs-on: ubuntu-latest
     steps:
       - name: Display Results
         run: |
           echo "Pull Requests:"
-          echo "Count: $PR_COUNT"
-          echo "Titles: $PR_TITLES"
+          echo "Count: ${{ needs.get_pull_requests_and_reviewers.outputs.count }}"
+          echo "Titles: ${{ needs.get_pull_requests_and_reviewers.outputs.titles }}"
           echo ""
-          echo "Branches:"
-          echo "Count: $BRANCH_COUNT"
-          echo "Names: $BRANCH_TITLES"
+          echo "Reviewers:"
+          echo "${{ needs.get_pull_requests_and_reviewers.outputs.reviewers }}"
