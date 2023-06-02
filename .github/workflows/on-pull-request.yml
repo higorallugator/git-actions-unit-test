@@ -90,9 +90,9 @@ jobs:
           fi
 
   approve-pr:
-    needs: unit-test
+    needs: analyze-test-results
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.outputs.tests-failed == 'false' && needs.unit-test.result == 'success' }}
+    if: ${{ needs.analyze-test-results.outputs.tests-failed == 'false' && needs.analyze-test-results.result == 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
@@ -113,9 +113,9 @@ jobs:
           gh pr unlock $PR_NUMBER
 
   request-changes-pr:
-    needs: unit-test
+    needs: analyze-test-results
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.outputs.tests-failed == 'true' || needs.unit-test.result != 'success' || needs.unit-test.result == 'failure'  || needs.unit-test.status == 'failure' || needs.unit-test.conclusion != 'success' }}
+    if: ${{ needs.analyze-test-results.outputs.tests-failed == 'true' || needs.analyze-test-results.result != 'success' || needs.analyze-test-results.result == 'failure'  || needs.analyze-test-results.status == 'failure' || needs.analyze-test-results.conclusion != 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
