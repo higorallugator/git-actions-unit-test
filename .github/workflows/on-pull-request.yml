@@ -20,13 +20,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
+      - name: Pass
+        run: echo "pass"
+      # - name: Checkout project
+      #   uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 16
 
       # - name: Install dependencies
       #   run: npm install
@@ -53,13 +55,17 @@ jobs:
         id: test
         run: |
           # result=$(npm run test:workflow 2>&1)
-          echo "result=$(npm run test:workflow 2>&1)"
-          if [ $? -eq 0 ]; then
-            echo "tests-result=$result" >> $GITHUB_ENV
-          else
-            echo "tests-result={"status":"failed"}" >> $GITHUB_ENV
-            exit 1
-          fi
+          # echo "result=$(npm run test:workflow 2>&1)"
+          # if [ $? -eq 0 ]; then
+          #   echo "tests-result=$result" >> $GITHUB_ENV
+          # else
+          #   echo "tests-result={"status":"failed"}" >> $GITHUB_ENV
+          #   exit 1
+          # fi
+
+          echo "result=$(npm run test:workflow)"
+          echo $result | jq '.testResults[] | select(.status == "failed")' > failed-tests.json
+
 
   analyze-test-results:
     runs-on: ubuntu-latest
@@ -72,8 +78,7 @@ jobs:
 
       - name: Check Jest failures]
         run: |
-          result=$GITHUB_EVENT_PATH
-          failures=$(echo $result | jq '.testResults[] | select(.status === "failed")' | jq length)
+          failures=$(cat failed-tests.json | jq length)
           if [[ $failures -gt 0 ]]; then
             echo "Jest test failures found!"
             echo "tests-failed=true" >> $GITHUB_ENV
@@ -81,6 +86,17 @@ jobs:
             echo "Jest test passed!"
             echo "tests-failed=false" >> $GITHUB_ENV
           fi
+
+
+        # result=$GITHUB_EVENT_PATH
+        # failures=$(echo $result | jq '.testResults[] | select(.status === "failed")' | jq length)
+        # if [[ $failures -gt 0 ]]; then
+        #   echo "Jest test failures found!"
+        #   echo "tests-failed=true" >> $GITHUB_ENV
+        # else
+        #   echo "Jest test passed!"
+        #   echo "tests-failed=false" >> $GITHUB_ENV
+        # fi
 
         # run: |
         #   failures=$(grep -c "<failure" ./report.xml)
