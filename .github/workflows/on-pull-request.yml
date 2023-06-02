@@ -17,7 +17,7 @@ on:
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
-  
+
 jobs:
 
   eslint:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2.2.0
+        uses: actions/setup-node@v3
         with:
           node-version: 16
 
@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2.2.0
+        uses: actions/setup-node@v3
         with:
           node-version: 16
 
@@ -69,34 +69,9 @@ jobs:
           gh pr review $PR_NUMBER --comment -b "Todos os testes passaram"
           gh pr review $PR_NUMBER --approve
 
-      # - name: Bloqueando o pull request
-      #   run: |
-      #     echo "Blocking merge PR..."
-      #     gh pr lock $PR_NUMBER
-      #     # gh pr lock $PR_NUMBER
-      #     # gh pr label $PR_NUMBER --add block-merge
-
-      # - name: Verificar status dos testes
-      #   run: |
-      #     if [ '$JOB_STATUS' == 'failure' ]; then
-      #       echo 'Os testes falharam. O pull request será bloqueado.'
-      #       gh pr lock $PR_NUMBER
-      #       gh pr review $PR_NUMBER --comment -b "Necessário verificar testes"
-      #       gh pr review $PR_NUMBER --request-changes
-      #       exit 1
-      #     fi
-      #     if [ '$JOB_STATUS' == 'success' ]; then
-      #       echo "Os testes passaram. O pull request será liberado."
-      #       gh pr unlock $PR_NUMBER
-      #       gh pr review $PR_NUMBER --comment -b "Todos os testes passaram"
-      #       gh pr review $PR_NUMBER --approve
-      #       exit 1
-      #     fi
-
   request-changes-pr:
     needs: tests
     runs-on: ubuntu-latest
-    if: ${{ needs.tests.result != 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
@@ -109,7 +84,6 @@ jobs:
   unlock-pr:
     needs: approve-pr
     runs-on: ubuntu-latest
-    if: ${{ needs.approve-pr.result != 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
