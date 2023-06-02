@@ -51,15 +51,8 @@ jobs:
 
       - name: Run unit tests
         run: |
-          if ! npm run test:unit  -- --reporters=jest-junit; then
-            exit 0
-          fi
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v3
-        with:
-          name: report
-          path: ./report.xml
+          result=$(npm run test:unit --json)
+          echo "tests-result:=$result" >> $GITHUB_ENV
 
   analyze-test-results:
     runs-on: ubuntu-latest
@@ -70,18 +63,28 @@ jobs:
         with:
           name: report
 
-      - name: Check Jest failures
+      - name: Check Jest failures]
         run: |
-          failures=$(grep -c "<failure" ./report.xml)
+          result=needs.unit-test.outputs.result
+          failures=$(echo $result | jq '.testResults[] | select(.status === "failed")' | jq length)
           if [[ $failures -gt 0 ]]; then
             echo "Jest test failures found!"
             echo "tests-failed=true" >> $GITHUB_ENV
-            exit 0
           else
             echo "Jest test passed!"
             echo "tests-failed=false" >> $GITHUB_ENV
-            exit 0
           fi
+        # run: |
+        #   failures=$(grep -c "<failure" ./report.xml)
+        #   if [[ $failures -gt 0 ]]; then
+        #     echo "Jest test failures found!"
+        #     echo "tests-failed=true" >> $GITHUB_ENV
+        #     exit 0
+        #   else
+        #     echo "Jest test passed!"
+        #     echo "tests-failed=false" >> $GITHUB_ENV
+        #     exit 0
+        #   fi
 
   approve-pr:
     needs: analyze-test-results
