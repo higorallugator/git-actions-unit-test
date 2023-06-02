@@ -6,7 +6,8 @@ describe('sum module', () => {
   it('adds 1 + 2 to equal 3', () => {
     expect(sum(1, 2)).toBe(3);
   });
-  // it('fail', () => {
-  //   expect(sum(1, 3)).toBe(3);
-  // });
+
+  it('adds 1 + 2 not to equal 3', () => {
+    expect(sum(1, 2)).not.toBe(3);
+  });
 });
