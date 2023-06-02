@@ -89,9 +89,11 @@ jobs:
           if [[ $failures -gt 0 ]]; then
             echo "Jest test failures found!"
             echo "tests-failed=true" >> $GITHUB_ENV
+            exit 0
           else
             echo "Jest test passed!"
             echo "tests-failed=false" >> $GITHUB_ENV
+            exit 0
           fi
 
   approve-pr:
