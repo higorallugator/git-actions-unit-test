@@ -97,7 +97,7 @@ jobs:
   approve-pr:
     needs: analyze-test-results
     runs-on: ubuntu-latest
-    if: ${{ needs.analyze-test-results.outputs.tests-failed == 'false' && needs.analyze-test-results.result == 'success' }}
+    if: ${{ needs.analyze-test-results.outputs.tests-failed == 'false' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
@@ -122,7 +122,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.analyze-test-results.outputs.tests-failed == 'true'  }}
     steps:
-      # || needs.analyze-test-results.result != 'success' || needs.analyze-test-results.result == 'failure'  || needs.analyze-test-results.status == 'failure' || needs.analyze-test-results.conclusion != 'success'
       - name: Checkout project
         uses: actions/checkout@v3
 
