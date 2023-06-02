@@ -63,8 +63,9 @@ jobs:
           #   exit 1
           # fi
 
-          echo "tests-result=$(npm run test:workflow)" >> $GITHUB_ENV
+          result=$(npm run test:workflow --json)
           # echo "tests-result=$($result | jq '.testResults[] | select(.status == "failed")')" >> $GITHUB_ENV
+          echo "tests-result=$result" >> $GITHUB_ENV
 
 
   analyze-test-results:
