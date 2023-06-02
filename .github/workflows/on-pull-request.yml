@@ -49,30 +49,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Run unit tests
-      #   run: |
-      #     if ! npm run test:unit; then
-      #       echo "tests-failed=true" >> $GITHUB_ENV
-      #       exit 0
-      #     else
-      #       echo "tests-failed=false" >> $GITHUB_ENV
-      #     fi
-
       - name: Run unit tests
         run: |
           if ! npm run test:unit  -- --reporters=jest-junit; then
             exit 0
           fi
 
-      # - name: Run Jest tests
-      #   run: npm run test:unit
-      #     # run: npm run test:unit -- --testResultsProcessor jest-junit
-
       - name: Upload test results
         uses: actions/upload-artifact@v3
         with:
           name: report
-          path: report.xml
+          path: ${{ github.workspace }}/report.xml
 
   analyze-test-results:
     runs-on: ubuntu-latest
@@ -85,7 +72,7 @@ jobs:
 
       - name: Check Jest failures
         run: |
-          failures=$(grep -c "<failure" report.xml)
+          failures=$(grep -c "<failure" ${{ github.workspace }}/report.xml)
           if [[ $failures -gt 0 ]]; then
             echo "Jest test failures found!"
             echo "tests-failed=true" >> $GITHUB_ENV
