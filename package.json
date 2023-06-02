@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test:unit": "npx jest --passWithNoTests --config=jest.unit.config.js",
-    "dev": "npx nodemon"
+    "dev": "npx nodemon",
+    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "keywords": [],
   "author": "",

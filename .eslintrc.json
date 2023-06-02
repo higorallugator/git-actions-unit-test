@@ -1,0 +1,124 @@
+{
+  "root": true,
+  "env": {
+    "es2021": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "airbnb-base",
+    "airbnb-typescript/base"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": [
+      "./tsconfig.json"
+    ]
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "sonarjs"
+  ],
+  "rules": {
+    "no-underscore-dangle": "off",
+    "no-console": "warn",
+    "class-methods-use-this": "off",
+    "camelcase": "warn",
+    "arrow-parens": [
+      2,
+      "always"
+    ],
+    "quotes": [
+      2,
+      "single"
+    ],
+    "implicit-arrow-linebreak": "off",
+    "consistent-return": "off",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "property",
+        "format": [
+          "strictCamelCase"
+        ],
+        "filter": {
+          "regex": "^[_a-zA-Z][a-zA-Z]*([A-Z][a-zA-Z]*)*$",
+          "match": false
+        }
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "@typescript-eslint/lines-between-class-members": [
+      "error",
+      "always",
+      {
+        "exceptAfterSingleLine": true
+      }
+    ],
+    "@typescript-eslint/no-var-requires": [
+      "off"
+    ],
+    "import/extensions":[
+      "off"
+    ],
+    "object-curly-newline": "off",
+    "max-params": [
+      "error",
+      4
+    ],
+    "max-len": [
+      "error",
+      150,
+      {
+        "ignoreComments": true
+      }
+    ],
+    "complexity": [
+      "error",
+      15
+    ],
+    "import/no-extraneous-dependencies": [
+      "off"
+    ],
+    "import/prefer-default-export": [
+      "off"
+    ],
+    "sonarjs/cognitive-complexity": [
+      "error",
+      15
+    ],
+    "sonarjs/no-one-iteration-loop": [
+      "error"
+    ],
+    "sonarjs/no-identical-expressions": [
+      "error"
+    ],
+    "sonarjs/no-identical-conditions": [
+      "error"
+    ],
+    "sonarjs/no-duplicate-string": [
+      "error"
+    ],
+    "sonarjs/no-use-of-empty-return-value": [
+      "error"
+    ],
+    "sonarjs/no-identical-functions": [
+      "error"
+    ],
+    "sonarjs/no-unused-collection": [
+      "error"
+    ],
+    "sonarjs/no-extra-arguments": [
+      "error"
+    ]
+  }
+}
