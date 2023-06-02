@@ -12,15 +12,5 @@ module.exports = {
     testMatch: [
       '**/__tests__/**/*.unit.(spec|test).[jt]s?(x)',
     ],
-    reporters: [
-      'default',
-      [
-        'jest-junit',
-        {
-          outputDirectory: './',
-          outputName: 'report.xml',
-        },
-      ],
-    ],
   },
 };

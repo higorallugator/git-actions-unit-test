@@ -63,8 +63,8 @@ jobs:
           #   exit 1
           # fi
 
-          echo "result=$(npm run test:workflow)"
-          echo "tests-result=$($result | jq '.testResults[] | select(.status == "failed")')" > $GITHUB_ENV
+          echo "tests-result=$(npm run test:workflow)" >> $GITHUB_ENV
+          # echo "tests-result=$($result | jq '.testResults[] | select(.status == "failed")')" >> $GITHUB_ENV
 
 
   analyze-test-results:
@@ -78,14 +78,16 @@ jobs:
 
       - name: Check Jest failures]
         run: |
-          echo ${{ needs.unit-test.outputs.tests-result }}
-          failures=$(cat failed-tests.json | jq length)
-          if [[ $failures -gt 0 ]]; then
+          status=$(echo "${{ needs.unit-test.outputs.tests-result }}" | jq -r '.status')
+          if [[ "$status" == "failed" ]]; then
             echo "Jest test failures found!"
             echo "tests-failed=true" >> $GITHUB_ENV
-          else
+          elif [[ "$status" == "passed" ]]; then
             echo "Jest test passed!"
             echo "tests-failed=false" >> $GITHUB_ENV
+          else
+            echo "Invalid Jest test status: $status"
+            echo "tests-failed=true" >> $GITHUB_ENV
           fi
 
 
