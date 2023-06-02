@@ -51,14 +51,12 @@ jobs:
 
       - name: Run unit tests
         run: |
-          try {
-            result=$(npm run test:unit --json)
+          if result=$(npm run test:unit --json 2>/dev/null); then
             echo "tests-result:=$result" >> $GITHUB_ENV
-          } catch (error) {
-            echo "tests-result:=$error" >> $GITHUB_ENV
-            echo "Error running unit tests: $error"
+          else
+            echo "tests-result:=Error running unit tests" >> $GITHUB_ENV
             exit 1
-          }
+          fi
 
   analyze-test-results:
     runs-on: ubuntu-latest
