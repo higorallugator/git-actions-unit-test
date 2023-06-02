@@ -51,7 +51,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          result=$(npm run test:unit --json 2>/dev/null)
+          result=$(npm run test:workflow)
           if [ $? -eq 0 ]; then
             echo "tests-result=$result" >> $GITHUB_ENV
             exit 0

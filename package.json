@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test:unit": "npx jest --passWithNoTests --config=jest.unit.config.js",
+    "test:workflow": "npx jest --json --passWithNoTests --config=jest.unit.config.js",
     "dev": "npx nodemon",
     "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "npx eslint --fix ."
