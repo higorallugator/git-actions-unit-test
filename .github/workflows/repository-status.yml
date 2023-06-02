@@ -35,7 +35,7 @@ jobs:
           reviewer_info=""
           for url in "${pull_request_urls[@]}"; do
             reviewers=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$url/requested_reviewers")
-            reviewer_names=$(echo "$reviewers" | jq -r '.[].login')
+            reviewer_names=$(echo "$reviewers" | jq -r '.[].user.login')
             reviewer_info+="Pull Request: $url | Reviewers: $reviewer_names"$'\n'
           done
           echo "REVIEWERS=$reviewer_info" >> $GITHUB_ENV
