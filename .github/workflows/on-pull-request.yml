@@ -62,7 +62,6 @@ jobs:
 
       - name: Aprovando Pull Request
         run: |
-          gh pr review $PR_NUMBER --comment -b "Todos os testes passaram"
           gh pr review $PR_NUMBER --approve
 
   unlock-pr:
