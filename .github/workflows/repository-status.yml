@@ -1,4 +1,4 @@
-name: Get Pull Requests and Branches
+name: Repository Info
 on:
   push:
     branches:
@@ -24,21 +24,21 @@ jobs:
         run: |
           pull_requests=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           "https://api.github.com/repos/${{ github.repository }}/pulls?state=open")
-          echo "::set-output name=count::$(echo "$pull_requests" | jq length)"
-          echo "::set-output name=titles::$(echo "$pull_requests" | jq -r '.[].title')"
-          echo "::set-output name=urls::$(echo "$pull_requests" | jq -r '.[].url')"
+          echo "COUNT=$(echo "$pull_requests" | jq length)" >> $GITHUB_ENV
+          echo "TITLES=$(echo "$pull_requests" | jq -r '.[].title')" >> $GITHUB_ENV
+          echo "URLS=$(echo "$pull_requests" | jq -r '.[].url')" >> $GITHUB_ENV
 
       - name: Get Reviewers
         id: reviewers
         run: |
-          pull_request_urls=(${{ needs.get_pull_requests.outputs.urls }})
+          pull_request_urls=(${{ env.URLS }})
           reviewer_info=""
           for url in "${pull_request_urls[@]}"; do
             reviewers=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$url/requested_reviewers")
             reviewer_names=$(echo "$reviewers" | jq -r '.[].login')
             reviewer_info+="Pull Request: $url | Reviewers: $reviewer_names"$'\n'
           done
-          echo "::set-output name=reviewers::$(echo "$reviewer_info")"
+          echo "REVIEWERS=$reviewer_info" >> $GITHUB_ENV
 
   display_results:
     needs: get_pull_requests_and_reviewers
@@ -47,8 +47,8 @@ jobs:
       - name: Display Results
         run: |
           echo "Pull Requests:"
-          echo "Count: ${{ needs.get_pull_requests_and_reviewers.outputs.count }}"
-          echo "Titles: ${{ needs.get_pull_requests_and_reviewers.outputs.titles }}"
+          echo "Count: ${{ env.COUNT }}"
+          echo "Titles: ${{ env.TITLES }}"
           echo ""
           echo "Reviewers:"
-          echo "${{ needs.get_pull_requests_and_reviewers.outputs.reviewers }}"
+          echo "${{ env.REVIEWERS }}"
