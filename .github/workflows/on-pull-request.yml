@@ -51,18 +51,17 @@ jobs:
 
       - name: Run unit tests
         run: |
-          # Executar comando que pode falhar
           if ! npm run test:unit; then
-            echo "::set-output name=tests-failed::true"
+            echo "tests-failed::true" >> $GITHUB_ENV
             exit 0
           else
-            echo "::set-output name=tests-failed::false"
+            echo "tests-failed::false" >> $GITHUB_ENV
           fi
 
   approve-pr:
     needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.outputs.tests-failed == 'false' && needs.unit-test.result == 'success' }}
+    if: ${{ env.tests-failed == 'false' && needs.unit-test.result == 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
@@ -85,7 +84,7 @@ jobs:
   request-changes-pr:
     needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.outputs.tests-failed == 'true' || needs.unit-test.result != 'success' || needs.unit-test.result == 'failure'  || needs.unit-test.status == 'failure' || needs.unit-test.conclusion != 'success' }}
+    if: ${{ env.tests-failed == 'true' || needs.unit-test.result != 'success' || needs.unit-test.result == 'failure'  || needs.unit-test.status == 'failure' || needs.unit-test.conclusion != 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
@@ -103,4 +102,7 @@ jobs:
 
       - name: Bloqueando Pull Request
         run: |
-          gh pr lock $PR_NUMBER
+          
+          if ! gh pr lock $PR_NUMBER; then
+            exit 0
+          fi
