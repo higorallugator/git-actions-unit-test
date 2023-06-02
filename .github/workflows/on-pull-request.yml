@@ -55,6 +55,7 @@ jobs:
   approve-pr:
     needs: tests
     runs-on: ubuntu-latest
+    if: ${{ tests.status == 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
@@ -64,6 +65,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
+          gh pr unlock $PR_NUMBER
           gh pr review $PR_NUMBER --comment -b "Todos os testes passaram"
           gh pr review $PR_NUMBER --approve
 
@@ -97,3 +99,18 @@ jobs:
       #       gh pr review $PR_NUMBER --approve
       #       exit 1
       #     fi
+
+  request-changes-pr:
+    needs: tests
+    runs-on: ubuntu-latest
+    if: ${{ tests.status != 'success' }}
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Requisitando mudanças ao Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr review $PR_NUMBER --request-changes
