@@ -52,16 +52,16 @@ jobs:
       - name: Run unit tests
         run: |
           if ! npm run test:unit; then
-            echo "tests-failed::true" >> $GITHUB_OUTPUT
+            echo "tests-failed=true" >> $GITHUB_ENV
             exit 0
           else
-            echo "tests-failed::false" >> $GITHUB_OUTPUT
+            echo "tests-failed=false" >> $GITHUB_ENV
           fi
 
   approve-pr:
     needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.outputs.tests-failed == 'false' && needs.unit-test.result == 'success' }}
+    if: ${{ env.tests-failed == 'false' && needs.unit-test.result == 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
@@ -84,7 +84,7 @@ jobs:
   request-changes-pr:
     needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.outputs.tests-failed == 'true' || needs.unit-test.result != 'success' || needs.unit-test.result == 'failure'  || needs.unit-test.status == 'failure' || needs.unit-test.conclusion != 'success' }}
+    if: ${{ env.tests-failed == 'true' || needs.unit-test.result != 'success' || needs.unit-test.result == 'failure'  || needs.unit-test.status == 'failure' || needs.unit-test.conclusion != 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
