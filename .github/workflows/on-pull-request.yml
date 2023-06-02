@@ -51,10 +51,13 @@ jobs:
 
       - name: Run unit tests
         run: |
-          if result=$(npm run test:unit --json 2>/dev/null); then
+          result=$(npm run test:unit --json 2>/dev/null)
+          if [ $? -eq 0 ]; then
             echo "tests-result=$result" >> $GITHUB_ENV
+            exit 0
           else
-            echo "tests-result=$result" >> $GITHUB_ENV
+            echo "tests-result=Error running unit tests" >> $GITHUB_ENV
+            exit 0
           fi
 
   analyze-test-results:
@@ -68,13 +71,16 @@ jobs:
 
       - name: Check Jest failures]
         run: |
-          result=$(npm run test:unit --json 2>/dev/null)
-          if [ $? -eq 0 ]; then
-            echo "tests-result=$result" >> $GITHUB_ENV
+          result=$GITHUB_EVENT_PATH
+          failures=$(echo $result | jq '.testResults[] | select(.status === "failed")' | jq length)
+          if [[ $failures -gt 0 ]]; then
+            echo "Jest test failures found!"
+            echo "tests-failed=true" >> $GITHUB_ENV
           else
-            echo "tests-result=Error running unit tests" >> $GITHUB_ENV
+            echo "Jest test passed!"
+            echo "tests-failed=false" >> $GITHUB_ENV
           fi
-          
+
         # run: |
         #   failures=$(grep -c "<failure" ./report.xml)
         #   if [[ $failures -gt 0 ]]; then
