@@ -71,8 +71,8 @@ jobs:
       - name: Upload test results
         uses: actions/upload-artifact@v3
         with:
-          name: test-results
-          path: test-results.xml
+          name: report
+          path: report.xml
 
   analyze-test-results:
     runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
 
       - name: Check Jest failures
         run: |
-          failures=$(grep -c "<failure" test-results.xml)
+          failures=$(grep -c "<failure" report.xml)
           if [[ $failures -gt 0 ]]; then
             echo "Jest test failures found!"
             echo "tests-failed=true" >> $GITHUB_ENV
