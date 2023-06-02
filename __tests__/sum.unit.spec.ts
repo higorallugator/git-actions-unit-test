@@ -7,7 +7,7 @@ describe('sum module', () => {
     expect(sum(1, 2)).toBe(3);
   });
 
-  // it('adds 1 + 2 to equal 3 - fail', () => {
-  //   expect(sum(1, 3)).toBe(3);
-  // });
+  it('adds 1 + 2 to equal 3 - fail', () => {
+    expect(sum(1, 3)).toBe(3);
+  });
 });
