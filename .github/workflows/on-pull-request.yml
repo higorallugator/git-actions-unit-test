@@ -59,7 +59,8 @@ jobs:
       #     fi
 
       - name: Run Jest tests
-        run: npm run test:unit -- --testResultsProcessor jest-junit
+        run: npm run test:unit
+          # run: npm run test:unit -- --testResultsProcessor jest-junit
 
       - name: Upload test results
         uses: actions/upload-artifact@v3
