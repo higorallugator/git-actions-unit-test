@@ -53,14 +53,14 @@ jobs:
         run: |
           # Executar comando que pode falhar
           if ! npm run test:unit; then
-            echo "::set-job-status failure"
+            echo "::set-output name=tests-failed::true"
             exit 0
           fi
 
   approve-pr:
     needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.result == 'success' }}
+    if: ${{ needs.unit-test.outputs.tests-failed != 'true' && needs.unit-test.result == 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
@@ -83,7 +83,7 @@ jobs:
   request-changes-pr:
     needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.result != 'success' || needs.unit-test.result == 'failure'  || needs.unit-test.status == 'failure' || needs.unit-test.conclusion != 'success' }}
+    if: ${{ needs.unit-test.outputs.tests-failed == 'true' || needs.unit-test.result != 'success' || needs.unit-test.result == 'failure'  || needs.unit-test.status == 'failure' || needs.unit-test.conclusion != 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
