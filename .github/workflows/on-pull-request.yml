@@ -55,12 +55,14 @@ jobs:
           if ! npm run test:unit; then
             echo "::set-output name=tests-failed::true"
             exit 0
+          else
+            echo "::set-output name=tests-failed::false"
           fi
 
   approve-pr:
     needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.outputs.tests-failed != 'true' && needs.unit-test.result == 'success' }}
+    if: ${{ needs.unit-test.outputs.tests-failed == 'false' && needs.unit-test.result == 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
