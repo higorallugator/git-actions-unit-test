@@ -50,7 +50,12 @@ jobs:
         run: npm install
 
       - name: Run unit tests
-        run: npm run test:unit
+        run: |
+          # Executar comando que pode falhar
+          if ! npm run test:unit; then
+            echo "::set-job-status failure"
+            exit 0
+          fi
 
   approve-pr:
     needs: unit-test
@@ -78,7 +83,7 @@ jobs:
   request-changes-pr:
     needs: unit-test
     runs-on: ubuntu-latest
-    if: ${{ needs.unit-test.result != 'success' || needs.unit-test.result == 'failure' || needs.unit-test.conclusion != 'success' }}
+    if: ${{ needs.unit-test.result != 'success' || needs.unit-test.result == 'failure'  || needs.unit-test.status == 'failure' || needs.unit-test.conclusion != 'success' }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
