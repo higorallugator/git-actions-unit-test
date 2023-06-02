@@ -54,7 +54,7 @@ jobs:
       - name: Run unit tests
         id: test
         run: |
-          result=$(npm run test:workflow --json)
+          result=$(npm run test:workflow --json 2>&1)
           echo "tests-result=$result" >> $GITHUB_ENV
         # echo "tests-result=$($result | jq '.testResults[] | select(.status == "failed")')" >> $GITHUB_ENV
           
