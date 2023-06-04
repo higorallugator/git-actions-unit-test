@@ -15,26 +15,23 @@ env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
-
   eslint:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Pass
-        run: echo "pass"
-      # - name: Checkout project
-      #   uses: actions/checkout@v3
+      - name: Checkout project
+        uses: actions/checkout@v3
 
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 16
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
-      # - name: Install dependencies
-      #   run: npm install
+      - name: Install dependencies
+        run: npm install
 
-      # - name: Run eslint
-      #   run: npm run lint
+      - name: Run eslint
+        run: npm run lint
 
   unit-test:
     needs: eslint
