@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  deploy-stg:
+  deploy-prd:
     runs-on: ubuntu-latest
 
     steps:
