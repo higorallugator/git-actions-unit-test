@@ -6,7 +6,7 @@ on:
       - closed
   push:
     branches:
-      - development
+      - main
 
 jobs:
 
@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy
         run: |
-          echo "deploy hml..."
+          echo "deploy prd..."
 
       - name: Done
         run: |
