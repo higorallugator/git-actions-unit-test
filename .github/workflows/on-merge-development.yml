@@ -9,6 +9,9 @@ on:
       - development
     types:
         - closed
+  pull_request_target:
+    types:
+      - closed
 
 jobs:
 
