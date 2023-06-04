@@ -14,6 +14,10 @@ on:
       - locked
       - unlocked
       - synchronize
+  pull_request_target:
+    types:
+      - opened
+      - reopened
 
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
