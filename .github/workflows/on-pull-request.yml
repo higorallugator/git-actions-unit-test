@@ -76,7 +76,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v3
 
-      - name: Aprovando Pull Request
+      - name: Approving Pull Request
         run: |
           gh pr review $PR_NUMBER --approve
 
@@ -87,7 +87,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v3
 
-      - name: Desbloqueando Pull Request
+      - name: Unlocking Pull Request
         run: |
           gh pr unlock $PR_NUMBER
 
@@ -103,7 +103,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v3
 
-      - name: Requisitando mudanças ao Pull Request
+      - name: Requesting changes to the Pull Request
         run: |
           if [[ $ESLINT_STATUS == 'failure' ]]; then
             gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os problemas com lint."
@@ -123,7 +123,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v3
 
-      - name: Bloqueando Pull Request
+      - name: Blocking Pull Request
         run: |
           if ! gh pr lock $PR_NUMBER; then
             exit 0

@@ -9,7 +9,6 @@ module.exports = {
       'src/api/',
       '__tests__/',
     ],
-    setupFilesAfterEnv: ['<rootDir>/__tests__/setup.ts'],
     testMatch: [
       '**/__tests__/**/*.int.(spec|test).[jt]s?(x)',
     ],
