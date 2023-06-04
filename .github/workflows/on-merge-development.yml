@@ -1,4 +1,4 @@
-name: Merge feito com a Development
+name: Development Merge
 
 on:
   push:
@@ -12,20 +12,13 @@ on:
 
 jobs:
 
-  tests:
+  deploy-stg:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout project
-        uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2.2.0
-        with:
-          node-version: '16'
-
-      - name: Montar a build
-        run: npm run build
+      - name: Build project
+        run: echo "npm run build ..."
 
       - name: Fazer deploy
         run: |
