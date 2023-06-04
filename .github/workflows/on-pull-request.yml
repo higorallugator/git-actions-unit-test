@@ -55,7 +55,7 @@ jobs:
         run: npm run test:unit
 
   int-test:
-    needs: [unit-test]
+    needs: unit-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
@@ -73,7 +73,7 @@ jobs:
         run: npm run test:int
 
   approve-pr:
-    needs: [int-test]
+    needs: int-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
@@ -84,7 +84,7 @@ jobs:
           gh pr review $PR_NUMBER --approve
 
   unlock-pr:
-    needs: [approve-pr]
+    needs: approve-pr
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
@@ -107,7 +107,7 @@ jobs:
           gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os testes."
 
   lock-pr:
-    needs: [request-changes-pr]
+    needs: request-changes-pr
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
