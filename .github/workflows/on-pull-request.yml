@@ -9,6 +9,11 @@ on:
     branches:
       - main
       - development
+    types:
+      - opened
+      - locked
+      - unlocked
+      - synchronize
 
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -106,13 +111,13 @@ jobs:
       - name: Requesting changes to the Pull Request
         run: |
           if [[ $ESLINT_STATUS == 'failure' ]]; then
-            gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os problemas com lint."
+            gh pr review $PR_NUMBER --request-changes --body "ESLINT :: Necessário corrigir os problemas com lint."
           fi
           if [[ $UNIT_STATUS == 'failure' ]]; then
-            gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os testes unitários."
+            gh pr review $PR_NUMBER --request-changes --body "TESTES UNITÁRIOS :: Necessário corrigir os testes unitários."
           fi
           if [[ $INT_STATUS == 'failure' ]]; then
-            gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os testes de integração."
+            gh pr review $PR_NUMBER --request-changes --body "ESTES DE INTEGRAÇÃO :: Necessário corrigir os testes de integração."
           fi
 
   lock-pr:
