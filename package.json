@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test:unit": "npx jest --passWithNoTests --config=jest.unit.config.js",
-    "test:int": "npx jest int --runInBand --passWithNoTests --watch --config=jest.int.config.js",
+    "test:int": "npx jest int --runInBand --passWithNoTests --config=jest.int.config.js",
     "dev": "npx nodemon",
     "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "npx eslint --fix ."
