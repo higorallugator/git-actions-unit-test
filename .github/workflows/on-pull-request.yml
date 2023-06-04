@@ -121,6 +121,7 @@ jobs:
   lock-pr:
     needs: [eslint, unit-test, int-test, request-changes-pr]
     runs-on: ubuntu-latest
+    if: ${{ failure() }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v3
