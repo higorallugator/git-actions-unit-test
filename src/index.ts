@@ -7,7 +7,8 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.listen(3000, () => {
+  // eslint-disable-next-line no-console
   console.log('Server is running on port 3000');
 });
 
-export { app }
+export { app };
