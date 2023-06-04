@@ -76,6 +76,9 @@ jobs:
     needs: [int-test]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
       - name: Aprovando Pull Request
         run: |
           gh pr review $PR_NUMBER --approve
@@ -84,6 +87,9 @@ jobs:
     needs: [approve-pr]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
       - name: Desbloqueando Pull Request
         run: |
           gh pr unlock $PR_NUMBER
@@ -93,6 +99,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ failure() }}
     steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
       - name: Requisitando mudanças ao Pull Request
         run: |
           gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os testes."
@@ -101,6 +110,9 @@ jobs:
     needs: [request-changes-pr]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
       - name: Bloqueando Pull Request
         run: |
           
