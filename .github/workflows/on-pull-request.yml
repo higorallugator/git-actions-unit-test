@@ -165,3 +165,11 @@ jobs:
           if ! gh pr lock $PR_NUMBER; then
             exit 0
           fi
+
+  job5:
+    runs-on: ubuntu-latest
+    needs: [eslint, unit-test]
+    if: ${{ failure() }}
+    steps:
+      - name: Executar Job 5 por que houve falha
+        run: echo "Executando Job 5"
