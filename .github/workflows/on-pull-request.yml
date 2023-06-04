@@ -15,10 +15,118 @@ env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
-  - include: ./on-pull-request/eslint.yml
-  - include: ./on-pull-request/unit-test.yml
-  - include: ./on-pull-request/int-test.yml
-  - include: ./on-pull-request/approve-pr.yml
-  - include: ./on-pull-request/approve-pr.yml
-  - include: ./on-pull-request/lock-pr.yml
-  - include: ./on-pull-request/unlock-pr.yml
+
+  eslint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pass
+        run: echo "pass"
+      # - name: Checkout project
+      #   uses: actions/checkout@v3
+
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 16
+
+      # - name: Install dependencies
+      #   run: npm install
+
+      # - name: Run eslint
+      #   run: npm run lint
+
+  unit-test:
+    needs: eslint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+  int-test:
+    needs: unit-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run int tests
+        run: npm run test:int
+
+  approve-pr:
+    needs: int-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Aprovando Pull Request
+        run: |
+          gh pr review $PR_NUMBER --approve
+
+  unlock-pr:
+    needs: approve-pr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Desbloqueando Pull Request
+        run: |
+          gh pr unlock $PR_NUMBER
+
+  request-changes-pr:
+    needs: [eslint, unit-test, int-test]
+    env:
+      ESLINT_STATUS: ${{ needs.eslint.result }}
+      UNIT_STATUS: ${{ needs.unit-test.result }}
+      INT_STATUS: ${{ needs.int-test.result }}
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Requisitando mudanças ao Pull Request
+        run: |
+          if [[ $ESLINT_STATUS == 'failure' ]]; then
+            gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os problemas com lint."
+          fi
+          if [[ $UNIT_STATUS == 'failure' ]]; then
+            gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os testes unitários."
+          fi
+          if [[ $INT_STATUS == 'failure' ]]; then
+            gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os testes de integração."
+          fi
+
+  lock-pr:
+    needs: [eslint, unit-test, int-test, request-changes-pr]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Bloqueando Pull Request
+        run: |
+          if ! gh pr lock $PR_NUMBER; then
+            exit 0
+          fi
