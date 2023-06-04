@@ -96,6 +96,10 @@ jobs:
 
   request-changes-pr:
     needs: [eslint, unit-test, int-test]
+    env:
+      ESLINT_STATUS: ${{ needs.eslint.result }}
+      UNIT_STATUS: ${{ needs.unit-test.result }}
+      INT_STATUS: ${{ needs.int-test.result }}
     runs-on: ubuntu-latest
     if: ${{ failure() }}
     steps:
@@ -104,7 +108,15 @@ jobs:
 
       - name: Requisitando mudanças ao Pull Request
         run: |
-          gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os testes."
+          if [[ $ESLINT_STATUS == 'failure' ]]; then
+            gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os problemas com lint."
+          fi
+          if [[ $UNIT_STATUS == 'failure' ]]; then
+            gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os testes unitários."
+          fi
+          if [[ $INT_STATUS == 'failure' ]]; then
+            gh pr review $PR_NUMBER --request-changes --body "Necessário corrigir os testes de integração."
+          fi
 
   lock-pr:
     needs: request-changes-pr
@@ -114,8 +126,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Bloqueando Pull Request
-        run: |
-          
+        run: |          
           if ! gh pr lock $PR_NUMBER; then
             exit 0
           fi
