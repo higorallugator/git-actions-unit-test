@@ -1,15 +1,7 @@
 name: Development Merge
 
 on:
-  push:
-    branches:
-      - development
   pull_request:
-    branches:
-      - development
-    types:
-        - closed
-  pull_request_target:
     types:
       - closed
 

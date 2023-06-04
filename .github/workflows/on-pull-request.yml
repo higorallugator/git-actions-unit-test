@@ -1,23 +1,11 @@
 name: Validação - Testes Unitários
 
 on:
-  push:
-    branches:
-      - main
-      - development
   pull_request:
-    branches:
-      - main
-      - development
-    types:
-      - opened
-      - locked
-      - unlocked
-      - synchronize
-  pull_request_target:
     types:
       - opened
       - reopened
+      - synchronize
 
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
