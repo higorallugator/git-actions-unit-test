@@ -1,4 +1,4 @@
-name: Validação - Testes Unitários
+name: Validação - Lint, Testes Unitários e de Integração
 
 on:
   pull_request:
@@ -106,10 +106,10 @@ jobs:
             gh pr review $PR_NUMBER --request-changes --body "ESLINT :: Necessário corrigir os problemas com lint."
           fi
           if [[ $UNIT_STATUS == 'failure' ]]; then
-            gh pr review $PR_NUMBER --request-changes --body "TESTES UNITÁRIOS :: Necessário corrigir os testes unitários."
+            gh pr review $PR_NUMBER --request-changes --body "TESTES UNITÁRIOS :: Necessário corrigir."
           fi
           if [[ $INT_STATUS == 'failure' ]]; then
-            gh pr review $PR_NUMBER --request-changes --body "ESTES DE INTEGRAÇÃO :: Necessário corrigir os testes de integração."
+            gh pr review $PR_NUMBER --request-changes --body "TESTES DE INTEGRAÇÃO :: Necessário corrigir."
           fi
 
   lock-pr:
