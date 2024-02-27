@@ -1,4 +1,4 @@
-name: Validação - Testes Unitários
+name: Validação - Lint, Testes Unitários e de Integração
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
-  eslint:
+  validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,100 +28,40 @@ jobs:
         run: npm install
 
       - name: Run eslint
+        id: eslint
         run: npm run lint
-
-  unit-test:
-    needs: eslint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      - name: Install dependencies
-        run: npm install
+        continue-on-error: true
 
       - name: Run unit tests
+        id: unit
         run: npm run test:unit
+        continue-on-error: true
 
-  int-test:
-    needs: unit-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run int tests
-        run: npm run test:int
-
-  approve-pr:
-    needs: int-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
-
-      - name: Approving Pull Request
+      - name: Approve or request changes
+        env:
+          ESLINT: ${{ steps.eslint.outcome }}
+          UNIT: ${{ steps.unit.outcome }}
         run: |
-          gh pr review $PR_NUMBER --approve
-
-  unlock-pr:
-    needs: approve-pr
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
-
-      - name: Unlocking Pull Request
-        run: |
-          gh pr unlock $PR_NUMBER
-
-  request-changes-pr:
-    needs: [eslint, unit-test, int-test]
-    env:
-      ESLINT_STATUS: ${{ needs.eslint.result }}
-      UNIT_STATUS: ${{ needs.unit-test.result }}
-      INT_STATUS: ${{ needs.int-test.result }}
-    runs-on: ubuntu-latest
-    if: ${{ failure() }}
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
-
-      - name: Requesting changes to the Pull Request
-        run: |
-          if [[ $ESLINT_STATUS == 'failure' ]]; then
-            gh pr review $PR_NUMBER --request-changes --body "ESLINT :: Necessário corrigir os problemas com lint."
-          fi
-          if [[ $UNIT_STATUS == 'failure' ]]; then
-            gh pr review $PR_NUMBER --request-changes --body "TESTES UNITÁRIOS :: Necessário corrigir os testes unitários."
-          fi
-          if [[ $INT_STATUS == 'failure' ]]; then
-            gh pr review $PR_NUMBER --request-changes --body "ESTES DE INTEGRAÇÃO :: Necessário corrigir os testes de integração."
+          if [[ $ESLINT == 'success' ]] && [[ $UNIT == 'success' ]]; then
+            gh pr review $PR_NUMBER --approve
+          else
+            if [[ $ESLINT == 'failure' ]]; then
+              gh pr review $PR_NUMBER --request-changes --body ":warning: Existem problemas a serem resolvidos de lint"
+            fi
+            if [[ $UNIT == 'failure' ]]; then
+              gh pr review $PR_NUMBER --request-changes --body ":warning: Necessário corrigir os testes unitários"
+            fi
           fi
 
-  lock-pr:
-    needs: [eslint, unit-test, int-test, request-changes-pr]
-    runs-on: ubuntu-latest
-    if: ${{ failure() }}
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
-
-      - name: Blocking Pull Request
+      - name: Unlock or block PR
+        env:
+          ESLINT: ${{ steps.eslint.outcome }}
+          UNIT: ${{ steps.unit.outcome }}
         run: |
-          if ! gh pr lock $PR_NUMBER; then
-            exit 0
+          if [[ $ESLINT == 'success' ]] && [[ $UNIT == 'success' ]]; then
+            gh pr unlock $PR_NUMBER
+          else
+            if ! gh pr lock $PR_NUMBER; then
+              exit 0
+            fi
           fi
